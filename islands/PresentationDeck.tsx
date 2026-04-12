@@ -6,22 +6,6 @@ export default function PresentationDeck() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showSpeakerNotes, setShowSpeakerNotes] = useState(false);
 
-  const totalSlides = 6;
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if typing in an input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      
-      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
-        setCurrentSlide(curr => Math.min(curr + 1, totalSlides - 1));
-      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        setCurrentSlide(curr => Math.max(curr - 1, 0));
-      }
-    };
-    globalThis.addEventListener('keydown', handleKeyDown);
-    return () => globalThis.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   const slides = [
     {
@@ -963,12 +947,18 @@ export default function PresentationDeck() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Allow user to use left/right arrows unless they are in an input field
+      // Allow user to use arrows/space/page keys unless they are in an input field
       if (["INPUT", "TEXTAREA"].includes((e.target as HTMLElement).tagName)) {
         return;
       }
-      if (e.key === "ArrowRight") nextSlide();
-      if (e.key === "ArrowLeft") prevSlide();
+      if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+        e.preventDefault();
+        nextSlide();
+      }
+      if (e.key === "ArrowLeft" || e.key === "PageUp") {
+        e.preventDefault();
+        prevSlide();
+      }
     };
     globalThis.addEventListener("keydown", handleKeyDown);
     return () => globalThis.removeEventListener("keydown", handleKeyDown);
@@ -981,10 +971,21 @@ export default function PresentationDeck() {
       
       {/* Main Slide Content */}
       <main class="flex-grow flex items-center justify-center p-4 md:p-12 z-10 w-full h-[calc(100vh-100px)] relative">
-        {slides[currentSlide].content}
+        <div key={currentSlide} class="w-full h-full flex items-center justify-center animate-slideFadeIn">
+          {slides[currentSlide].content}
+        </div>
       </main>
 
       {/* Minimalist Navigation */}
+      {/* Slide Progress Counter */}
+      <div class="absolute bottom-5 left-6 z-40 flex items-center space-x-2 opacity-30 hover:opacity-100 transition-opacity duration-500">
+        <span class="text-[10px] font-mono text-zinc-400 tracking-widest">
+          <span class="text-white font-semibold">{String(currentSlide + 1).padStart(2, '0')}</span>
+          <span class="text-zinc-600 mx-1">/</span>
+          <span>{String(slides.length).padStart(2, '0')}</span>
+        </span>
+      </div>
+
       <nav class="absolute bottom-10 left-0 right-0 flex items-center justify-center space-x-12 z-20">
         <button
           onClick={prevSlide}
