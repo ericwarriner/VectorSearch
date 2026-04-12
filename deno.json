@@ -1,0 +1,47 @@
+{
+  "lock": false,
+  "tasks": {
+    "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
+    "cli": "echo \"import '\\$fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
+    "manifest": "deno task cli manifest $(pwd)",
+    "start": "deno run -A --watch=static/,routes/ dev.ts",
+    "build": "deno run -A dev.ts build",
+    "preview": "deno run -A main.ts",
+    "update": "deno run -A -r https://fresh.deno.dev/update .",
+    "deploy": "gcloud run deploy vectorsearch-demo --source . --project ericwarriner2 --region us-central1 --allow-unauthenticated"
+  },
+  "lint": {
+    "rules": {
+      "tags": [
+        "fresh",
+        "recommended"
+      ]
+    }
+  },
+  "exclude": [
+    "**/_fresh/*",
+    "static/models/*"
+  ],
+  "imports": {
+    "$fresh/": "https://deno.land/x/fresh@1.7.3/",
+    "@headlessui/react": "npm:@headlessui/react@^2.2.0",
+    "dotenv": "npm:dotenv@^16.4.7",
+    "preact": "https://esm.sh/preact@10.22.0",
+    "preact/": "https://esm.sh/preact@10.22.0/",
+    "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
+    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
+    "tailwindcss": "npm:tailwindcss@3.4.1",
+    "tailwindcss/": "npm:/tailwindcss@3.4.1/",
+    "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
+    "$std/": "https://deno.land/std@0.216.0/",
+    "firebase/app": "npm:firebase@^10.8.1/app",
+    "firebase/firestore": "npm:firebase@^10.8.1/firestore",
+    "firebase-admin": "npm:firebase-admin@^12.1.0",
+    "@vladmandic/face-api": "npm:@vladmandic/face-api@^1.7.13"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  },
+  "nodeModulesDir": "auto"
+}

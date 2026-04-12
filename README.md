@@ -1,113 +1,76 @@
+# Enterprise Face Recognition via Edge Compute & Google Cloud Vectors
 
-## 🖼️ Application Preview
+This project is a modernized, serverless Face Recognition and Vector Database identity platform built strictly with **Deno Fresh**, **Google Firestore**, and **ONNX Edge Machine Learning**. 
 
-Below is a preview of the application user interface.
-
-![Application Preview](https://storage.googleapis.com/www.ericwarriner.com/VectorSearch1.JPG)
-
+This repository was completely refactored from a legacy Oracle 23ai + Python hardware-dependent architecture into an ultra-fast, zero-proprietery-hardware framework designed for presentation to CTOs/CIOs.
 
 ---
 
-## 🚀 Live Demo
+## 🚀 Key Architectural Advantages
 
-Check it out here:  [Oracle 23ai Vector Search](https://23ai.org).
+### 1. Edge Compute & Pure TypeScript
+By deploying exclusively on **Deno Fresh**, all heavy Python middleware layers and backend image transmission dependencies have been eliminated. Client connections natively interface with Google Cloud.
+- **Serverless Scaling:** Instantly scale to millions of hits via Google Cloud Run encapsulation. No need to order or manage hardware nodes.
+
+### 2. Client-Side ML (Zero-Latency ONNX Runtimes)
+Facial inference is processed entirely on the client's WebGL computational layer using `Microsoft's onnxruntime-web`.
+- High-resolution photographs never breach the network boundary initially.
+- Math executes entirely in the user's local RAM.
+
+### 3. "ArcFace" Math vs Cloud Native Vectors
+We dynamically load massive **State of the Art (SOTA) ArcFace ResNet-100** architectures mathematically identical to enterprise clearance systems.
+- Every detected face projects onto a `512-dimensional` continuous hypersphere.
+- Google Cloud Firestore's Vector Search (`findNearest`) instantly maps this projection against the entire database utilizing highly efficient Euclidean distance algorithms. 
 
 ---
 
-## 📦 Prerequisites
+## 🛠 Features
 
-- [Deno](https://deno.land/manual/getting_started/installation)
-- Docker (optional, for containerization)
-- Oracle OCI or Google Cloud SDK (optional, for pushing Docker images)
-- Oracle 23ai instance
+1. **Enterprise Aesthetic Presentation**
+   - Impregnated with a deep Obsidian / Zinc-900 CSS architecture. 
+   - Utilizes precision *OpticalFadeIn* micro-animations and zero-delay transition stacks optimized for high-end executive presentations.
+
+2. **The Database Seeder (`/populate`)**
+   - Includes a massive automated ingestion pipeline designed to dynamically map arbitrary face databases.
+   - **Hugging Face Dataloop**: Will securely download, parse, execute ONNX math, and upload 10,000 distinct faces from the `ashraq/tmdb-people-image` HF dataset directly to Google Cloud.
+
+3. **Dynamic Re-Querying Dashboard (`/`)**
+   - Reactive Age Range filters (`Min Age` and `Max Age`).
+   - Granular exact-match sliders (`Euclidean Tolerance Limits`).
+   - Modifying a slider executes a 400ms debounced re-fetch, eliminating the need to repeatedly upload source images.
 
 ---
 
-## ⚙️ Environment Variables
+## 🖥 Prerequisites
 
-This project relies on a VectorSearchMiddleware service and a Oracle Autonomous 23ai Database service that performs vector-based operations. Before running the app, please note that environment variables such as this API_URL will need to be set:
+- **Deno** 1.40+ (`deno --version`)
+- A **Google Cloud Platform (GCP)** Account
+- A corresponding **Firestore Native Database**.
 
+### Firestore Setup (Composite Indexing)
+Because Google Cloud organizes fast-lookups using deep Indexing, you must create a specialized `512-dimensional` Vector Index on your GCP target. 
+
+Run the provided script to deploy your index configuration directly to GCP:
 ```bash
-API_URL=http://<VECTOR_MIDDLEWARE_HOST>:<PORT>/encode_face
+.\scratch\create_arcface_index.bat
 ```
 
-For example:
+### Credentials
+Place your `service.json` Google Cloud Administrator key exactly in the root of this project repository. The application will detect this automatically to securely connect to Firebase.
 
+---
+
+## 🏃 Setup & Execution
+
+**1. Run Locally:**
+Boot the Deno server utilizing Hot Module Reloading:
 ```bash
-API_URL=http://129.80.96.10:8080/encode_face
+deno task start
 ```
+*Visit `http://localhost:8000` to interact with the system or `http://localhost:8000/populate` to begin seeding the database!*
 
-You can export this in your terminal session or place it in a local `.env` file.
-
----
-
-## 🐳 Docker Support
-
-### Build the Docker Image
-
+**2. Deploy to Production:**
+The source is bundled and perfectly abstracted via Docker. Deploy to your Google Cloud ecosystem simply by executing:
 ```bash
-docker build -t <REGION>-docker.pkg.dev/<PROJECT_ID>/<REPOSITORY>/<IMAGE_NAME>:latest .
+deno task deploy
 ```
-
-For example:
-
-```bash
-docker build -t us-region-docker.pkg.dev/project-id/deno-app/deno-app:latest .
-```
-
-### Push to Google Artifact Registry
-
-Authenticate with Google Cloud:
-
-```bash
-gcloud auth configure-docker <REGION>-docker.pkg.dev
-```
-
-Push your Docker image:
-
-```bash
-docker push <REGION>-docker.pkg.dev/<PROJECT_ID>/<REPOSITORY>/<IMAGE_NAME>:latest
-```
-
----
-
-
-
-## 📂 Project Structure
-
-```
-.
-├── VectorSearchDatabase PopulationTool     # Tool to populate Oracle 23ai database with images.
-├── VectorSearchMiddleware                  # Middleware proxy to connect and interact with Oracle 23ai DB
-├── VectorSearchUserInterface               # Default UI and Application entry point
-
-```
-
----
-
-
-## ⚖️ Legal Disclaimer
-
-This application demonstrates **Vector Search** powered by an [**Oracle 23ai Converged Database**](https://www.oracle.com/database/23ai/).  
-Oracle, the Oracle logo, and Oracle 23ai are trademarks or registered trademarks of Oracle and/or its affiliates.  
-
-This project is an independent application that utilizes Oracle technology. It is **not affiliated with**, **endorsed by**, or **sponsored by Oracle Corporation**.  
-Any Oracle trademarks used in this project are solely for the purpose of identifying the underlying technology and are the property of Oracle.
-
-If you are an Oracle representative and have concerns about this usage, please contact me to resolve the matter.
-
----
-
-## 🙌 Contributing
-
-Contributions are welcome!  
-If you'd like to contribute, please fork the repo and submit a pull request. For major changes, open an issue first to discuss your ideas.
-
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-

@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .glass {
+    @apply backdrop-blur-md bg-white/10 border border-white/20;
+  }
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #050505; /* Deep black fallback */
+  font-family: "Inter", system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Animations */
+@keyframes opticalFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+}
+
+.slide-in {
+  animation: opticalFadeInUp 0.8s cubic-bezier(0.2, 1, 0.2, 1) forwards;
+}
+
+/* Base custom scrollbar - Refined */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Animated Glow Border on Hover & Active */
+.glow-border-hover, .glow-border-active {
+  position: relative;
+}
+.glow-border-hover::before, .glow-border-active::before {
+  content: "";
+  position: absolute;
+  inset: -3px; /* Extra thick 3px boundary */
+  border-radius: inherit;
+  padding: 3px;
+  background: linear-gradient(90deg, #22d3ee, #3b82f6, #8b5cf6, #22d3ee, #3b82f6);
+  background-size: 400% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 10;
+  pointer-events: none;
+}
+.glow-border-hover:hover::before, .glow-border-active::before {
+  opacity: 1;
+  animation: borderPan 3s linear infinite;
+}
+.glow-border-active {
+  box-shadow: 0 0 40px rgba(34, 211, 238, 0.2);
+  z-index: 20;
+}
+
+@keyframes borderPan {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}

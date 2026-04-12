@@ -1,6 +1,14 @@
-# Ignore all .env files in any directory
-*.env
-.env.*
-VectorSearch*/notes.txt
-VectorSearch*/cached_tmdb_people_image/*
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
 
+# Fresh build directory
+_fresh/
+# npm dependencies
+node_modules/
+
+# Cloud Credentials
+service.json
