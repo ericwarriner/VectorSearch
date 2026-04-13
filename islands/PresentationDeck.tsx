@@ -472,7 +472,8 @@ export default function PresentationDeck() {
                 </circle>
                 
                 {/* Minimalist Face Node */}
-                <path d="M 40 45 Q 43 42 45 45 M 55 45 Q 57 42 60 45" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="42.5" cy="44" r="2" fill="white" />
+                <circle cx="57.5" cy="44" r="2" fill="white" />
                 <path d="M 40 55 Q 50 65 60 55" fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
                 
                 {/* Projecting Vectors */}
@@ -596,7 +597,25 @@ export default function PresentationDeck() {
                     <animate attributeName="stroke-dashoffset" values="6;0" dur="0.5s" repeatCount="indefinite" />
                   </path>
                </g>
-               <text x="100" y="38" fill="currentColor" font-size="6" font-family="monospace" text-anchor="middle" letter-spacing="2">[ 0.12, -0.4, 0.99 ... ]</text>
+               <defs>
+                 <clipPath id="vectorFlowClip">
+                   <rect x="58" y="10" width="84" height="20" />
+                 </clipPath>
+               </defs>
+               
+               {/* Continuous Vector Streaming Illusion */}
+               <g clip-path="url(#vectorFlowClip)">
+                 <text x="0" y="24" fill="#34d399" font-size="6.5" font-family="monospace" text-anchor="middle" font-weight="bold">
+                   <animateTransform attributeName="transform" type="translate" values="30,0; 180,0" dur="4s" repeatCount="indefinite" />
+                   <animate attributeName="opacity" values="0; 1; 1; 0" keyTimes="0; 0.2; 0.8; 1" dur="4s" repeatCount="indefinite" />
+                   [ 0.12, -0.44 ]
+                 </text>
+                 <text x="0" y="24" fill="#34d399" font-size="6.5" font-family="monospace" text-anchor="middle" font-weight="bold">
+                   <animateTransform attributeName="transform" type="translate" values="30,0; 180,0" dur="4s" begin="2s" repeatCount="indefinite" />
+                   <animate attributeName="opacity" values="0; 1; 1; 0" keyTimes="0; 0.2; 0.8; 1" dur="4s" begin="2s" repeatCount="indefinite" />
+                   [-0.92,  0.11 ]
+                 </text>
+               </g>
 
                {/* Secure Cloud DB */}
                <path d="M 140 50 Q 140 35 155 35 Q 160 25 175 30 Q 185 35 185 50 Q 190 60 175 60 L 145 60 Q 130 60 140 50 Z" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" />
