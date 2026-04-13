@@ -1322,6 +1322,10 @@ export default function PresentationDeck() {
         e.preventDefault();
         prevSlide();
       }
+      if (e.key === "n" || e.key === "N") {
+        e.preventDefault();
+        setShowSpeakerNotes(prev => !prev);
+      }
     };
     globalThis.addEventListener("keydown", handleKeyDown);
     return () => globalThis.removeEventListener("keydown", handleKeyDown);
@@ -1345,6 +1349,157 @@ export default function PresentationDeck() {
     { label: "Urgency",       color: "text-red-400" },      // 14: why now
     { label: "Close",         color: "text-zinc-400" },     // 15: closing
   ];
+
+  const PRESENTER_NOTES = [
+    // 0: intro
+    {
+      title: "Opening — The Strategic Pivot",
+      points: [
+        { color: "text-cyan-400", heading: "Setting the Stage", text: "Thank you for the opportunity to present today. What you're about to see is not a theoretical roadmap or a vendor pitch — it is a live, working prototype of a fundamentally new architecture for enterprise identity. We have built and deployed a complete facial recognition pipeline that runs entirely on Google Cloud serverless infrastructure, replacing legacy monolithic hardware with software-defined intelligence. The core thesis is simple: we can deliver the same mission-critical capability while making it cheaper to run, faster to build, and safer to operate." },
+        { color: "text-zinc-300", heading: "Framing the Journey", text: "This presentation will walk you through a live demonstration first, so you can see the end result before we explain the engineering behind it. From there, we'll trace the technical architecture, the privacy model, the business case, and a concrete implementation timeline. Every slide maps back to one of those three strategic pillars you see on screen: Cheaper, Faster, Safer." }
+      ],
+      pitch: "We are here to prove that enterprise AI doesn't require enterprise-scale infrastructure anymore."
+    },
+    // 1: demo
+    {
+      title: "Live Demo — Seeing Is Believing",
+      points: [
+        { color: "text-fuchsia-400", heading: "What You're Watching", text: "This is a real-time facial recognition system executing entirely within your browser. There is no server processing your face — the ArcFace ResNet-100 model runs locally via WebAssembly and ONNX Runtime. Your webcam captures a frame, the model extracts a 512-dimensional mathematical fingerprint of your facial geometry, and that numerical vector is transmitted to Google Cloud Firestore where it performs a native nearest-neighbor search against our enrolled database. The entire round-trip completes in under 200 milliseconds." },
+        { color: "text-fuchsia-400", heading: "Why This Matters", text: "This is not a mockup, a Figma prototype, or a slide-ware promise. This is production-grade code running in a browser tab right now. The fact that we can do enterprise-grade biometric matching without a single GPU server, without any FPGA hardware, and without any Oracle database licensing is precisely the disruption we are proposing. If this can run in a conference room browser, imagine what it does at enterprise scale on Cloud Run." }
+      ],
+      pitch: "This isn't a mock-up. This is working, shipping, production-ready code — running right now in your browser."
+    },
+    // 2: technical-strategy
+    {
+      title: "Strategic Vision & Challenges",
+      points: [
+        { color: "text-red-400", heading: "The Problem We're Solving", text: "Our current architecture is built on Oracle 23ai with proprietary vector search extensions, tightly coupled to on-premise FPGA accelerator hardware. This creates three compounding bottlenecks: First, the monolithic database design forces every AI workload through a single chokepoint, creating massive cross-domain synchronization delays. Second, vendor lock-in means we cannot iterate on models without coordinating hardware refresh cycles. Third, the licensing model charges per-processor, meaning our costs scale linearly with demand regardless of actual utilization." },
+        { color: "text-red-400", heading: "The Decoupled Vision", text: "What we are proposing is a clean decoupling. We separate ML inference from storage entirely. The intelligence runs at the browser edge via WebAssembly — zero server dependency. The orchestration layer runs on Cloud Run containers that scale to zero when idle. And the data layer leverages Firestore's native vector indexing, which performs semantic search without any custom driver code or proprietary database extensions. This is not incremental improvement — it is architectural liberation." }
+      ],
+      pitch: "We cannot build agile AI on top of rigid, monolithic legacy databases. It's time to decouple."
+    },
+    // 3: vector-education
+    {
+      title: "Vector Geometry 101",
+      points: [
+        { color: "text-teal-400", heading: "Making Math Accessible", text: "Before we go deeper into the architecture, let me demystify what a vector actually is. When ArcFace processes a face, it extracts 512 numerical measurements — things like the distance between eye sockets, the curvature of the jawline, the ratio of forehead height to chin depth. These 512 numbers form a mathematical fingerprint that we call an embedding vector. Two faces that look alike will produce vectors that sit close together in geometric space. Two faces that look different will produce vectors that are far apart. The entire search operation is simply asking: which stored vector is closest to this new one?" },
+        { color: "text-teal-400", heading: "The Geometric Insight", text: "What makes this powerful is that the distance between vectors is mathematically deterministic. There's no fuzzy logic, no probabilistic guessing. Euclidean distance gives us an exact numerical score. If the distance is below our threshold, it's a match. If it's above, it's not. This is why vector search is so compelling for identity — it converts a subjective visual comparison into an objective mathematical proof." }
+      ],
+      pitch: "A vector is a numerical fingerprint. The search is simply measuring the geometric distance between fingerprints."
+    },
+    // 4: vector-synthesis
+    {
+      title: "Relational + Vector Synthesis",
+      points: [
+        { color: "text-indigo-400", heading: "The Fusion Advantage", text: "Traditional databases treat relational filtering and vector search as two completely separate operations. You run your SQL WHERE clause first, get a filtered result set, and then perform vector similarity on that subset. This two-pass approach introduces significant latency and complexity. What Firestore does natively is fuse these operations into a single atomic query. You can filter by age, gender, region — any relational metadata — and simultaneously perform nearest-neighbor vector search in one pass. Zero overhead, zero custom code." },
+        { color: "text-indigo-400", heading: "Practical Impact", text: "In practice, this means our application code stays clean. We don't need to build custom caching layers, manage intermediate result sets, or write specialized query optimizers. The database handles the convergence natively. This dramatically reduces the engineering surface area and eliminates an entire class of performance bugs that plague hybrid search implementations." }
+      ],
+      pitch: "One query. Zero overhead. Firestore natively fuses relational filters with vector proximity in a single pass."
+    },
+    // 5: architecture (Cross-Pillar)
+    {
+      title: "Cross-Pillar Solution Architecture",
+      points: [
+        { color: "text-blue-400", heading: "App Mod Pillar — Compute & Edge", text: "We are migrating away from monolithic legacy architectures. We've pushed the ML inference via WebAssembly out to the client edge, while utilizing elastic, serverless Google Cloud Run containers to orchestrate the backend without idle overhead or FPGA licensing. The client browser handles the heaviest computation — facial feature extraction — meaning our server costs are limited to lightweight API orchestration rather than GPU-intensive inference." },
+        { color: "text-purple-400", heading: "Data & AI Pillar — Retrieval", text: "The application layer creates the intelligence — the embeddings — but it crosses over to the Data & AI pillar via Firestore to extract value. We leverage its native algorithmic findNearest functionality to seamlessly perform real-time semantic matches. This cross-pillar design means we're not just modernizing compute; we're proving that App Mod and Data & AI can converge into a single coherent solution." }
+      ],
+      pitch: "This isn't an infrastructure lift-and-shift. We are marrying modern App Mod containerized scale with advanced Data & AI semantic retrieval to prove an end-to-end modernized cloud solution."
+    },
+    // 6: arcface-model
+    {
+      title: "Enterprise Identity via ArcFace",
+      points: [
+        { color: "text-cyan-400", heading: "Why ResNet-100", text: "ArcFace ResNet-100 is the gold standard for facial recognition in enterprise environments. Unlike lighter models such as MobileNet, ResNet-100 performs deep mathematical extraction across 100 residual layers, capturing facial bone structure, orbital geometry, and angular measurements with extreme precision. It is specifically designed to be invariant to lighting conditions, camera angles, aging, and accessories like glasses or hats. The result is a 512-dimensional vector that is mathematically unique to each individual's skeletal facial structure." },
+        { color: "text-cyan-400", heading: "Edge Execution via ONNX", text: "What makes our approach distinctive is that this entire model runs locally in the browser via ONNX Runtime WebAssembly. There is no server round-trip for inference. The face never leaves the device as an image — only the resulting numerical vector is transmitted. This gives us enterprise-grade accuracy with zero server-side GPU costs and built-in privacy compliance from the architecture level." }
+      ],
+      pitch: "Enterprise-grade facial recognition running entirely in the browser. No GPU servers. No image transmission. Pure mathematical precision."
+    },
+    // 7: architecture-pitch
+    {
+      title: "Future-Proof by Design",
+      points: [
+        { color: "text-purple-400", heading: "Escaping the Hardware Trap", text: "The fundamental problem with FPGA-based architectures is that your intelligence is physically fused to specific silicon. When a new breakthrough model releases — and they release constantly — you cannot adopt it without a hardware refresh cycle that takes months of procurement, installation, and validation. Our architecture completely inverts this. The model is a software file. When a better model appears on HuggingFace or a research paper, we swap the ONNX file and redeploy. Zero hardware changes. Zero downtime. Instant iteration." },
+        { color: "text-purple-400", heading: "Containerized Elastic Scale", text: "On the backend, Cloud Run containers scale automatically from zero to thousands of instances based on demand, and back to zero when traffic drops. There are no server racks to order, no capacity planning meetings, no idle hardware burning electricity. This architecture is designed to cost nothing when it's not being used, and scale infinitely when it is." }
+      ],
+      pitch: "Software-defined intelligence outpaces physical hardware lifecycles every single time."
+    },
+    // 8: privacy-gdpr
+    {
+      title: "Zero-Trust Privacy Model",
+      points: [
+        { color: "text-emerald-400", heading: "Privacy by Architecture", text: "This is not privacy bolted on as an afterthought — it is privacy by architecture. Raw facial imagery never leaves the user's device. The ArcFace model runs locally in the browser, converts the face into an irreversible 512-dimensional float array, and only that numerical matrix is transmitted to the cloud. You cannot reconstruct a face from these numbers. It is a one-way mathematical transformation. This means we are GDPR-compliant by default, because biometric imagery — the regulated data — never touches our servers, our network, or our database." },
+        { color: "text-emerald-400", heading: "Regulatory Positioning", text: "For regulated industries — healthcare, financial services, government — this architecture eliminates entire categories of compliance burden. There are no facial images to encrypt at rest, no biometric data retention policies to enforce on the server side, and no data breach scenarios involving raw imagery. The vector that we store is mathematically meaningless without the original model weights, which are public. This is the strongest possible privacy posture for a biometric system." }
+      ],
+      pitch: "Mathematical abstraction is the ultimate privacy shield. No images on the server means no images to breach."
+    },
+    // 9: data-flow
+    {
+      title: "Secure Pipeline Trace",
+      points: [
+        { color: "text-fuchsia-400", heading: "Following the Data", text: "Let me walk you through exactly what happens when a user initiates a search. Step one: the Web Client captures a camera frame and runs ArcFace ResNet-100 inference locally via WebGL ONNX Runtime. The result is a 2-kilobyte numerical vector — not an image. Step two: that vector is transmitted as an encrypted payload through our Application Edge layer, which handles authentication, rate limiting, and global firewall rules. Step three: the Cloud Run container receives the vector and passes it directly to Firestore's native findNearest function. Step four: Firestore returns the closest matching records with their Euclidean distances. The entire pipeline operates under zero-trust principles — every hop authenticates, and only numbers cross the wire." }
+      ],
+      pitch: "Camera to cloud in under 200ms. Four hops. Zero images transmitted. Zero trust at every boundary."
+    },
+    // 10: tco-slide
+    {
+      title: "Total Cost of Ownership",
+      points: [
+        { color: "text-amber-400", heading: "The Financial Case", text: "Let me put concrete numbers on this. Our current Oracle infrastructure carries a per-processor licensing cost of approximately $47,500 per year, plus FPGA hardware that depreciates on a 3-to-5-year cycle with a $500,000+ initial capital expenditure. The Google Cloud alternative runs on consumption pricing — you pay per query, per millisecond of compute, per gigabyte of storage. When the system is idle, the cost is literally zero dollars. Cloud Run scales to zero. Firestore charges only for reads and writes. There is no idle burn rate." },
+        { color: "text-amber-400", heading: "CapEx to OpEx Transformation", text: "Beyond the raw cost savings, this migration converts a capital expenditure line item — hardware procurement that lands on the balance sheet and depreciates — into an operating expenditure that scales linearly with actual business value delivered. The CFO sees cleaner financials, predictable monthly billing, and zero depreciation schedules to manage. The infrastructure becomes a utility, not an asset." }
+      ],
+      pitch: "From $500K+ in hardware capital expenditure to zero-dollar idle costs. The infrastructure disappears from the balance sheet."
+    },
+    // 11: code-splitting
+    {
+      title: "Proof of Simplicity",
+      points: [
+        { color: "text-blue-400", heading: "Complexity Reduction in Action", text: "This single code block on screen is the entire vector search implementation. That's it. Legacy Oracle vector search required hundreds of lines of custom PL/SQL, specialized driver configurations, FPGA initialization routines, and proprietary SDK integrations. We replaced all of that with five lines of native Firestore code. One function call — findNearest — with a vector field, a query vector, a limit, and a distance measure. No custom drivers. No specialized DBA knowledge. No hardware initialization. This is what complexity reduction looks like in practice." },
+        { color: "text-blue-400", heading: "Engineering Velocity Impact", text: "The downstream impact of this simplicity is profound. Any developer on the team can understand, modify, and deploy this code. There is no specialized DBA bottleneck, no FPGA firmware expertise required, no multi-week testing cycles for driver compatibility. Our time-to-market for new features drops from months down to a single sprint. When we need to tune the search — adjust the distance threshold, change the limit, add pre-filters — it's a one-line configuration change, not a database migration." }
+      ],
+      pitch: "Five lines of code replaced hundreds of lines of proprietary Oracle PL/SQL. That is the power of native cloud simplicity."
+    },
+    // 12: business-value
+    {
+      title: "Executive Value Realization",
+      points: [
+        { color: "text-blue-400", heading: "CIO Lens — Stability & Compliance", text: "For the CIO, this architecture delivers enterprise-grade reliability and regulatory peace of mind. Google Cloud provides 99.999% SLA with automatic multi-region failover across continent zones. Disaster recovery is built into the platform — there is no single point of failure, and edge clusters self-heal globally. On the compliance front, GDPR exposure drops to near-zero because biometric imagery never leaves the client device. Your security posture shifts from 'how do we protect this sensitive data' to 'we never had it in the first place.'" },
+        { color: "text-emerald-400", heading: "CFO Lens — Financial Transformation", text: "For the CFO, this is a clean CapEx-to-OpEx conversion. We eliminate Oracle licensing fees entirely — that's roughly $47,500 per processor per year gone from the budget. We eliminate FPGA hardware procurement — that's $500K+ in capital expenditure that never hits the balance sheet again. And with Cloud Run's scale-to-zero capability, we eliminate idle infrastructure costs completely. This migration pays for itself through licensing elimination alone." },
+        { color: "text-amber-400", heading: "CPO Lens — Product Agility", text: "For the CPO, this unlocks speed. No more 6-month hardware procurement delays before you can try a new ML model. Hot-swap to the latest vision model from HuggingFace in an afternoon. Ship features in days, not quarters. Sub-100ms semantic search directly lifts conversion rates and user engagement. The competitive edge isn't just in having AI — it's in how fast you can iterate on it." }
+      ],
+      pitch: "Cheaper to run, faster to build, safer to operate. This migration pays for itself through licensing elimination alone."
+    },
+    // 13: implementation-timeline
+    {
+      title: "Implementation Timeline & Plan",
+      points: [
+        { color: "text-indigo-400", heading: "Phase 1 — Weeks 1-2: Cloud Foundation", text: "The first two weeks focus on provisioning the Google Cloud Project, standing up isolated Deno endpoints, and validating that our ML edge inference architecture integrates cleanly with the cloud backend. We establish the deployment pipeline, configure IAM roles, and run our first end-to-end smoke test from browser to Firestore. By end of week two, we have a working skeleton that proves the architectural thesis." },
+        { color: "text-cyan-400", heading: "Phase 2 — Weeks 3-5: Migration & Seeding", text: "Weeks three through five are the heavy lift. We map the Oracle relational schema to Firestore document collections, batch-generate 512-dimensional ArcFace embeddings for the entire enrolled database using bulk seeder workers, and verify strict vector index integrity. This phase also includes parallel running — the old system stays live while we populate and validate the new one." },
+        { color: "text-emerald-400", heading: "Phase 3 — Week 6: UAT & Cut-over", text: "Week six is production cut-over. We execute User Acceptance Testing against the shadow index, run accuracy validation to confirm search quality matches or exceeds the legacy system, seamlessly switch global DNS traffic routing to the new Edge Load Balancer, and officially decommission the idle Oracle hardware. Six weeks from kickoff to production." }
+      ],
+      pitch: "Six weeks from kickoff to full production. The old system stays live throughout — zero disruption to operations."
+    },
+    // 14: why-now
+    {
+      title: "Why Act Now?",
+      points: [
+        { color: "text-red-400", heading: "The Windows Are Closing", text: "Oracle 23ai extended support and FPGA firmware update windows are narrowing. Every quarter we delay increases the risk of being forced into an emergency migration under deadline pressure with zero runway for proper testing. Proactive migration gives us the luxury of parallel running, thorough UAT, and a controlled cut-over. Reactive migration means scrambling." },
+        { color: "text-amber-400", heading: "The Cost Compounds Daily", text: "Every month we remain on legacy infrastructure burns approximately $42,000 in idle Oracle licensing plus FPGA power and cooling costs that serverless completely eliminates from day one. That's not a future savings projection — it's cash burning right now. Every quarter of delay is $126,000 that could have been redirected to product innovation." },
+        { color: "text-cyan-400", heading: "The Market Isn't Waiting", text: "Vector search is becoming table stakes in the enterprise AI space. Organizations across our competitive landscape are already deploying semantic search, embedding-based retrieval, and AI-native product experiences. The companies that modernize now capture first-mover advantage in customer experience, operational efficiency, and talent acquisition. The companies that wait will be playing catch-up with outdated infrastructure." }
+      ],
+      pitch: "Every quarter of delay compounds our technical debt, burns $126K in avoidable costs, and surrenders competitive ground."
+    },
+    // 15: closing
+    {
+      title: "The Strategic Pivot — Closing Remarks",
+      points: [
+        { color: "text-cyan-400", heading: "Summarizing the Case", text: "Let me bring it all together. We have demonstrated a live, working prototype that proves this architecture is not theoretical — it runs in a browser right now. We have shown that it is cheaper to run by eliminating $500K+ in hardware CapEx and ongoing Oracle licensing. We have shown that it is faster to build by reducing the entire vector search implementation to five lines of native cloud code with instant model hot-swapping. And we have shown that it is safer to operate with zero-trust privacy where biometric images never leave the device, GDPR compliance by default, and 99.999% SLA with automatic global failover." },
+        { color: "text-zinc-300", heading: "The Ask", text: "What we are asking for today is your support to execute the six-week implementation plan. The investment is minimal — the architecture runs on consumption pricing with zero idle costs. The risk is contained — we parallel-run throughout and cut over only when UAT confirms parity. And the return is immediate — licensing savings begin the moment we decommission the legacy hardware. We are excited to partner with you on this transformation." }
+      ],
+      pitch: "Cheaper to run. Faster to build. Safer to operate. The time to modernize is now."
+    },
+  ];
+
+  const currentNotes = PRESENTER_NOTES[currentSlide] || PRESENTER_NOTES[0];
 
   const currentTheme = themeBlocks[currentSlide] || themeBlocks[0];
 
@@ -1427,22 +1582,19 @@ export default function PresentationDeck() {
                <h3 class="text-xs font-mono text-cyan-400 uppercase tracking-widest">Presenter Talking Points</h3>
              </div>
              
-             <h2 class="text-3xl font-light text-white mb-8 tracking-tight relative z-10">Cross-Pillar Architecture</h2>
+             <h2 class="text-3xl font-light text-white mb-8 tracking-tight relative z-10">{currentNotes.title}</h2>
              
-             <div class="space-y-6 text-zinc-300 text-[15px] leading-relaxed relative z-10">
-                <div class="p-5 bg-white/5 border border-white/10 rounded-xl">
-                  <p><strong class="text-blue-400 font-semibold mb-2 block tracking-wide">1. App Mod Pillar (Compute & Edge)</strong>
-                  "We are migrating away from monolithic legacy architectures. We've pushed the ML inference via WebAssembly out to the client edge, while utilizing elastic, serverless Google Cloud Run containers to orchestrate the backend without idle overhead or FPGA licensing."</p>
-                </div>
-                
-                <div class="p-5 bg-white/5 border border-white/10 rounded-xl">
-                  <p><strong class="text-purple-400 font-semibold mb-2 block tracking-wide">2. Data & AI Pillar (Retrieval)</strong>
-                  "The application layer creates the intelligence (embeddings), but it crosses over to the Data & AI pillar via Firestore to extract value. We leverage its native algorithmic <span class="bg-black border border-white/10 px-1 rounded text-xs translate-y-[-1px] inline-block">findNearest</span> functionality to seamlessly perform real-time semantic matches."</p>
-                </div>
+             <div class="space-y-6 text-zinc-300 text-[15px] leading-relaxed relative z-10 max-h-[50vh] overflow-y-auto pr-2" style={{ scrollbarWidth: 'thin', scrollbarColor: '#333 transparent' }}>
+                {currentNotes.points.map((pt: any, i: number) => (
+                  <div key={i} class="p-5 bg-white/5 border border-white/10 rounded-xl">
+                    <p><strong class={`${pt.color} font-semibold mb-2 block tracking-wide`}>{pt.heading}</strong>
+                    "{pt.text}"</p>
+                  </div>
+                ))}
                 
                 <div class="mt-8 p-5 bg-zinc-900 rounded-xl border border-white/5 border-l-4 border-l-amber-500 shadow-inner">
                   <p class="font-mono text-amber-500 text-xs mb-2 uppercase tracking-widest">The Elevator Pitch</p>
-                  <p class="text-zinc-400 italic">"This isn't an infrastructure lift-and-shift. We are marrying modern App Mod containerized scale with advanced Data & AI semantic retrieval to prove an end-to-end modernized cloud solution."</p>
+                  <p class="text-zinc-400 italic">"{currentNotes.pitch}"</p>
                 </div>
              </div>
           </div>
