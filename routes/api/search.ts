@@ -1,7 +1,7 @@
-import { Handlers } from "$fresh/server.ts";
 import { getDb } from "../../utils/firebase.ts";
 import { FieldValue } from "npm:firebase-admin/firestore";
 import { Buffer } from "node:buffer";
+import { Handlers } from "fresh/compat";
 
 interface SearchRequest {
   vector: number[];
@@ -12,7 +12,9 @@ interface SearchRequest {
 }
 
 export const handler: Handlers = {
-  async POST(req, _ctx) {
+  async POST(ctx) {
+    const req = ctx.req;
+
     try {
       const db = getDb();
       if (!db) {
@@ -56,14 +58,14 @@ export const handler: Handlers = {
           age = Math.floor(diffFn / (1000 * 60 * 60 * 24 * 365.25));
         }
 
-        // Apply age parameters if provided. If age is unknown (-1), we can choose to include or exclude them. 
+        // Apply age parameters if provided. If age is unknown (-1), we can choose to include or exclude them.
         // We will include them only if they asked for a very wide range, else we filter out unknown ages.
         let inAgeRange = true;
         if (age !== -1) {
-             if (age < data.min_age || age > data.max_age) inAgeRange = false;
+          if (age < data.min_age || age > data.max_age) inAgeRange = false;
         } else {
-             // If age is completely unknown, we exclude them to be strict about the parameter.
-             inAgeRange = false;
+          // If age is completely unknown, we exclude them to be strict about the parameter.
+          inAgeRange = false;
         }
 
         if (inAgeRange) {
@@ -74,7 +76,7 @@ export const handler: Handlers = {
               ? Buffer.from(d.image_blob).toString("base64")
               : null,
             distance: d.distance || 0,
-            age: age
+            age: age,
           });
         }
       }

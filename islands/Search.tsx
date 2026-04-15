@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { h } from "preact";
 
 interface SearchResponse {
   distance: number;
@@ -25,16 +24,18 @@ export default function SearchDemo() {
   const [faceapi, setFaceapi] = useState<any>(null);
   const [currentVector, setCurrentVector] = useState<number[] | null>(null);
   const inferenceMs = useRef(0);
-  const [telemetry, setTelemetry] = useState<{inference: number, latency: number, payload: string} | null>(null);
+  const [telemetry, setTelemetry] = useState<
+    { inference: number; latency: number; payload: string } | null
+  >(null);
   const [dbCount, setDbCount] = useState<number | null>(null);
 
   useEffect(() => {
-     fetch("/api/count")
-        .then(res => res.json())
-        .then(data => {
-            if (data.count !== undefined) setDbCount(data.count);
-        })
-        .catch(err => console.error("Could not fetch DB count", err));
+    fetch("/api/count")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.count !== undefined) setDbCount(data.count);
+      })
+      .catch((err) => console.error("Could not fetch DB count", err));
   }, []);
 
   useEffect(() => {
@@ -42,10 +43,10 @@ export default function SearchDemo() {
       try {
         const fa = await import("npm:@vladmandic/face-api");
         setFaceapi(fa);
-        
+
         // Fast SSD MobileNet strictly for drawing the box
         await fa.nets.ssdMobilenetv1.loadFromUri("/models");
-        
+
         // Initialize massive ONNX pipeline
         const { initArcFaceModels } = await import("../utils/arcface.ts");
         await initArcFaceModels();
@@ -63,11 +64,11 @@ export default function SearchDemo() {
 
   // Debounce reactor for auto-searching on slider drag
   useEffect(() => {
-     if (!currentVector) return;
-     const t = setTimeout(() => {
-         executeQuery(currentVector);
-     }, 400); // 400ms debounce
-     return () => clearTimeout(t);
+    if (!currentVector) return;
+    const t = setTimeout(() => {
+      executeQuery(currentVector);
+    }, 400); // 400ms debounce
+    return () => clearTimeout(t);
   }, [currentVector, numRows, minAge, maxAge, tolerance]);
 
   const handleFileUpload = async (e: Event) => {
@@ -119,68 +120,70 @@ export default function SearchDemo() {
   };
 
   const executeQuery = async (vector: number[]) => {
-      try {
-          setLoading(true);
-          setStatus("Searching Firestore...");
-          const startQ = performance.now();
+    try {
+      setLoading(true);
+      setStatus("Searching Firestore...");
+      const startQ = performance.now();
 
-          const payloadBody = {
-              vector,
-              min_age: minAge,
-              max_age: maxAge,
-              num_rows: numRows,
-              tolerance: tolerance,
-          };
-          const pSize = (JSON.stringify(payloadBody).length / 1024).toFixed(2);
+      const payloadBody = {
+        vector,
+        min_age: minAge,
+        max_age: maxAge,
+        num_rows: numRows,
+        tolerance: tolerance,
+      };
+      const pSize = (JSON.stringify(payloadBody).length / 1024).toFixed(2);
 
-          const response = await fetch("/api/search", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payloadBody),
-          });
+      const response = await fetch("/api/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payloadBody),
+      });
 
-          if (!response.ok) {
-            throw new Error(`Server returned ${response.status}: ${await response.text()}`);
-          }
-
-          const data: SearchResponse[] = await response.json();
-          setResults(data);
-          setSelectedIndex(0);
-          
-          setTelemetry({
-              inference: Math.round(inferenceMs.current),
-              latency: Math.round(performance.now() - startQ),
-              payload: pSize
-          });
-
-          // Dynamically refresh Database Count
-          fetch("/api/count")
-             .then(res => res.json())
-             .then(countData => {
-                 if (countData.count !== undefined) setDbCount(countData.count);
-             })
-             .catch(() => {});
-
-          setStatus(
-            data.length > 0
-              ? `Query Complete: ${data.length} matches`
-              : "No similar faces found.",
-          );
-      } catch (err: any) {
-          setError(err.message || "Database Query Failed");
-          setStatus("Error occurred.");
-      } finally {
-          setLoading(false);
+      if (!response.ok) {
+        throw new Error(
+          `Server returned ${response.status}: ${await response.text()}`,
+        );
       }
+
+      const data: SearchResponse[] = await response.json();
+      setResults(data);
+      setSelectedIndex(0);
+
+      setTelemetry({
+        inference: Math.round(inferenceMs.current),
+        latency: Math.round(performance.now() - startQ),
+        payload: pSize,
+      });
+
+      // Dynamically refresh Database Count
+      fetch("/api/count")
+        .then((res) => res.json())
+        .then((countData) => {
+          if (countData.count !== undefined) setDbCount(countData.count);
+        })
+        .catch(() => {});
+
+      setStatus(
+        data.length > 0
+          ? `Query Complete: ${data.length} matches`
+          : "No similar faces found.",
+      );
+    } catch (err: any) {
+      setError(err.message || "Database Query Failed");
+      setStatus("Error occurred.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div class="w-full max-w-5xl bg-zinc-900/40 backdrop-blur-md border border-white/10 rounded-xl p-8 shadow-2xl flex flex-col relative overflow-hidden glow-border-hover">
-      
       <div class="flex justify-between items-end border-b border-white/10 pb-6 mb-8 z-10 relative">
         <div>
           <h2 class="text-2xl font-light tracking-tight text-white mb-2 flex items-center">
-             <div class="w-2 h-2 rounded-full bg-cyan-400 mr-3 animate-pulse"></div>
+            <div class="w-2 h-2 rounded-full bg-cyan-400 mr-3 animate-pulse">
+            </div>
             Firestore Vector Search
           </h2>
           <p class="text-zinc-500 text-xs font-mono tracking-widest uppercase">
@@ -191,21 +194,40 @@ export default function SearchDemo() {
         {telemetry && (
           <div class="hidden md:flex space-x-6 bg-black/60 border border-green-500/20 px-4 py-2 rounded-lg backdrop-blur-md">
             <div class="flex flex-col">
-              <span class="text-[9px] text-green-500/70 font-mono tracking-widest uppercase">Inference Time</span>
-              <span class="text-green-400 font-mono text-sm">{telemetry.inference}ms</span>
+              <span class="text-[9px] text-green-500/70 font-mono tracking-widest uppercase">
+                Inference Time
+              </span>
+              <span class="text-green-400 font-mono text-sm">
+                {telemetry.inference}ms
+              </span>
             </div>
             <div class="flex flex-col border-l border-green-500/20 pl-6">
-              <span class="text-[9px] text-green-500/70 font-mono tracking-widest uppercase">Payload Size</span>
-              <span class="text-green-400 font-mono text-sm">{telemetry.payload} KB</span>
+              <span class="text-[9px] text-green-500/70 font-mono tracking-widest uppercase">
+                Payload Size
+              </span>
+              <span class="text-green-400 font-mono text-sm">
+                {telemetry.payload} KB
+              </span>
             </div>
             <div class="flex flex-col border-l border-green-500/20 pl-6">
-              <span class="text-[9px] text-green-500/70 font-mono tracking-widest uppercase">Cloud Latency</span>
-              <span class="text-green-400 font-mono text-sm">{telemetry.latency}ms</span>
+              <span class="text-[9px] text-green-500/70 font-mono tracking-widest uppercase">
+                Cloud Latency
+              </span>
+              <span class="text-green-400 font-mono text-sm">
+                {telemetry.latency}ms
+              </span>
             </div>
             {dbCount !== null && (
-              <div class="flex flex-col border-l border-green-500/20 pl-6 cursor-help" title="Total Vectors Indexed in Database">
-                <span class="text-[9px] text-green-500/70 font-mono tracking-widest uppercase">Vectors Indexed</span>
-                <span class="text-green-400 font-mono text-sm">{dbCount.toLocaleString()}</span>
+              <div
+                class="flex flex-col border-l border-green-500/20 pl-6 cursor-help"
+                title="Total Vectors Indexed in Database"
+              >
+                <span class="text-[9px] text-green-500/70 font-mono tracking-widest uppercase">
+                  Vectors Indexed
+                </span>
+                <span class="text-green-400 font-mono text-sm">
+                  {dbCount.toLocaleString()}
+                </span>
               </div>
             )}
           </div>
@@ -229,7 +251,9 @@ export default function SearchDemo() {
         {/* Sidebar Controls */}
         <div class="md:col-span-4 flex flex-col space-y-6">
           <div class="bg-black/30 rounded-lg p-6 border border-white/5">
-            <h3 class="text-xs uppercase tracking-widest font-bold mb-5 text-zinc-400">Query Parameters</h3>
+            <h3 class="text-xs uppercase tracking-widest font-bold mb-5 text-zinc-400">
+              Query Parameters
+            </h3>
 
             <div class="space-y-6">
               <div>
@@ -298,7 +322,9 @@ export default function SearchDemo() {
                 class="w-full h-auto rounded shadow-lg border border-white/5 opacity-90"
                 alt="Query Face"
               />
-               <div class="w-full text-center mt-2 text-[10px] text-zinc-600 font-mono tracking-widest uppercase">Target Encoding</div>
+              <div class="w-full text-center mt-2 text-[10px] text-zinc-600 font-mono tracking-widest uppercase">
+                Target Encoding
+              </div>
             </div>
           )}
         </div>
@@ -313,11 +339,20 @@ export default function SearchDemo() {
 
           {loading && (
             <div class="flex flex-col items-center justify-center h-64 space-y-4">
-               <div class="flex space-x-2">
-                 <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce"></div>
-                 <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                 <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-               </div>
+              <div class="flex space-x-2">
+                <div class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce">
+                </div>
+                <div
+                  class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce"
+                  style="animation-delay: 0.1s"
+                >
+                </div>
+                <div
+                  class="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-bounce"
+                  style="animation-delay: 0.2s"
+                >
+                </div>
+              </div>
               <p class="text-zinc-500 text-xs font-mono tracking-widest uppercase">
                 {status}
               </p>
@@ -334,7 +369,11 @@ export default function SearchDemo() {
                 <div
                   key={res.id}
                   onClick={() => setSelectedIndex(index)}
-                  class={`bg-zinc-900 rounded border border-white/5 transition-all duration-300 group relative cursor-pointer ${index === selectedIndex ? "glow-border-active scale-[1.20] z-20 shadow-[0_0_50px_rgba(34,211,238,0.4)]" : "glow-border-hover z-0"}`}
+                  class={`bg-zinc-900 rounded border border-white/5 transition-all duration-300 group relative cursor-pointer ${
+                    index === selectedIndex
+                      ? "glow-border-active scale-[1.20] z-20 shadow-[0_0_50px_rgba(34,211,238,0.4)]"
+                      : "glow-border-hover z-0"
+                  }`}
                 >
                   {res.image_base64
                     ? (
@@ -343,13 +382,17 @@ export default function SearchDemo() {
                           src={`data:image/jpeg;base64,${res.image_base64}`}
                           class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700"
                         />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent">
+                        </div>
                       </div>
                     )
                     : (
                       <div class="w-full h-40 bg-zinc-800 flex items-center justify-center relative rounded-t">
-                        <span class="text-zinc-600 font-mono text-xs">NO ASSET</span>
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent"></div>
+                        <span class="text-zinc-600 font-mono text-xs">
+                          NO ASSET
+                        </span>
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent">
+                        </div>
                       </div>
                     )}
                   <div class="p-4 absolute bottom-0 left-0 right-0 pointer-events-none">
@@ -357,10 +400,12 @@ export default function SearchDemo() {
                       {res.name}
                     </div>
                     <div class="flex justify-between items-center mt-1">
-                        <div class="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">Distance</div>
-                        <div class="text-[10px] text-cyan-400 font-mono bg-cyan-900/30 px-1 py-0.5 rounded">
-                          {res.distance.toFixed(5)}
-                        </div>
+                      <div class="text-[10px] text-zinc-500 font-mono uppercase tracking-wider">
+                        Distance
+                      </div>
+                      <div class="text-[10px] text-cyan-400 font-mono bg-cyan-900/30 px-1 py-0.5 rounded">
+                        {res.distance.toFixed(5)}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -370,7 +415,20 @@ export default function SearchDemo() {
 
           {!loading && results.length === 0 && !error && !uploadedImageSrc && (
             <div class="flex flex-col items-center justify-center h-64 space-y-4 text-zinc-600 border border-dashed border-white/5 rounded-xl">
-              <svg class="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v16m8-8H4"></path></svg>
+              <svg
+                class="w-8 h-8 opacity-50"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="1"
+                  d="M12 4v16m8-8H4"
+                >
+                </path>
+              </svg>
               <p class="text-xs uppercase tracking-widest font-mono opacity-60">
                 Awaiting Query Vector
               </p>

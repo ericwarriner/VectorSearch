@@ -1,35 +1,19 @@
 {
-  "lock": false,
   "tasks": {
-    "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
-    "cli": "echo \"import '\\$fresh/src/dev/cli.ts'\" | deno run --unstable -A -",
-    "manifest": "deno task cli manifest $(pwd)",
+    "check": "deno fmt --check && deno lint && deno check",
     "start": "deno run -A --watch=static/,routes/ dev.ts",
     "build": "deno run -A dev.ts build",
-    "preview": "deno run -A main.ts",
-    "update": "deno run -A -r https://fresh.deno.dev/update .",
+    "update": "deno run -A -r jsr:@fresh/update .",
     "deploy": "gcloud run deploy vectorsearch-demo --source . --project ericwarriner2 --region us-central1 --allow-unauthenticated"
   },
-  "lint": {
-    "rules": {
-      "tags": [
-        "fresh",
-        "recommended"
-      ]
-    }
-  },
-  "exclude": [
-    "**/_fresh/*",
-    "static/models/*"
-  ],
+  "lint": { "rules": { "tags": ["fresh", "recommended"] } },
+  "exclude": ["**/_fresh/*", "static/models/*"],
   "imports": {
-    "$fresh/": "https://deno.land/x/fresh@1.7.3/",
     "@headlessui/react": "npm:@headlessui/react@^2.2.0",
     "dotenv": "npm:dotenv@^16.4.7",
-    "preact": "https://esm.sh/preact@10.22.0",
-    "preact/": "https://esm.sh/preact@10.22.0/",
-    "@preact/signals": "https://esm.sh/*@preact/signals@1.2.2",
-    "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
+    "preact": "npm:preact@^10.28.3",
+    "preact/": "npm:/preact@^10.28.3/",
+    "@preact/signals": "npm:@preact/signals@^2.7.1",
     "tailwindcss": "npm:tailwindcss@3.4.1",
     "tailwindcss/": "npm:/tailwindcss@3.4.1/",
     "tailwindcss/plugin": "npm:/tailwindcss@3.4.1/plugin.js",
@@ -37,11 +21,10 @@
     "firebase/app": "npm:firebase@^10.8.1/app",
     "firebase/firestore": "npm:firebase@^10.8.1/firestore",
     "firebase-admin": "npm:firebase-admin@^12.1.0",
-    "@vladmandic/face-api": "npm:@vladmandic/face-api@^1.7.13"
+    "@vladmandic/face-api": "npm:@vladmandic/face-api@^1.7.13",
+    "@fresh/plugin-tailwind-v3": "jsr:@fresh/plugin-tailwind-v3",
+    "fresh": "jsr:@fresh/core@^2.2.2"
   },
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact"
-  },
+  "compilerOptions": { "jsx": "react-jsx", "jsxImportSource": "preact" },
   "nodeModulesDir": "auto"
 }

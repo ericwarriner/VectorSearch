@@ -1,15 +1,16 @@
-FROM denoland/deno:alpine
+FROM denoland/deno:debian
 
 WORKDIR /app
 COPY . .
 
-# Cache dependencies
-RUN deno cache main.ts
+# Cache all dependencies
+RUN deno cache dev.ts main.ts
 
-# Ensure Fresh routes are built
+# Build Fresh assets — this generates _fresh/server.js (the production bundle)
 RUN deno task build
 
-# Cloud Run sets the PORT env variable automatically
+# Cloud Run injects PORT=8080 automatically
 EXPOSE 8080
 
-CMD ["run", "-A", "main.ts"]
+# Use shell form so $PORT is interpolated from the environment at runtime
+CMD sh -c "deno serve -A --port=$PORT _fresh/server.js"

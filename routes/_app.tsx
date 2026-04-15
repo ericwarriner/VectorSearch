@@ -1,4 +1,4 @@
-import { type PageProps } from "$fresh/server.ts";
+import { type PageProps } from "fresh";
 import { useEffect } from "preact/hooks";
 
 export default function App({ Component }: PageProps) {

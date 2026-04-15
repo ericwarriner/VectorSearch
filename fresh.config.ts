@@ -1,6 +1,7 @@
-import { defineConfig } from "$fresh/server.ts";
-import tailwind from "$fresh/plugins/tailwind.ts";
+import { tailwind } from "@fresh/plugin-tailwind-v3";
 
-export default defineConfig({
+// Note: In Deno Fresh 2.0, defineConfig is deprecated.
+// We export a raw config object compatible with AppOptions.
+export default {
   plugins: [tailwind()],
-});
+};
