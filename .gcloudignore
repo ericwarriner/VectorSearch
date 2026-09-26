@@ -1,0 +1,18 @@
+# Never ship credentials into an image layer.
+service.json
+.env
+.env.*
+
+# Rebuilt inside the image; a host-generated copy would carry
+# platform-specific paths and stale hashes.
+node_modules/
+_fresh/
+
+# Not needed at build or runtime.
+.git/
+.gitignore
+.dockerignore
+*.pptx
+scratch/
+README.md
+.gcloudignore
