@@ -9,7 +9,7 @@ metadata:
 
 **Cloud:** GCP project `ericwarriner2` (number 535054082444), gcloud account eric.warriner@gmail.com — a third project, separate from WallaB.AI's `wallab-501200` and Fazenda's `newfazendaapp`.
 - Firestore `(default)`, Native mode, `nam5`, has two READY flat vector indexes: `images4_arcface` (512-d, the live one, 10,000 documents) and a legacy `images3` (128-d, from an earlier embedding model).
-- The project also holds an unrelated Cloud Run service `site` (region uk). Leave it alone.
+- The deploy session reported an unrelated Cloud Run service `site` here, but a live `gcloud run services list` across all eight of Eric's projects found no such service (2026-09-26); `vectorsearch-demo` is the only one in this project.
 
 **Deploying from the Windows PC:** pin `--project ericwarriner2 --account eric.warriner@gmail.com` on every gcloud call. This PC's gcloud default project is `theweekbrewed` (checked 2026-09-26), so an unpinned call lands there. `gcloud run deploy --source .` builds from the `Dockerfile`, not Buildpacks.
 
