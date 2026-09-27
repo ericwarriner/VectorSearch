@@ -1,6 +1,6 @@
 ---
 name: deploy-state
-description: Where the Google Cloud Vector Search demo runs (Cloud Run vectorsearch-demo in GCP project ericwarriner2, Firestore vector index images4_arcface) as verified 2026-09-26, how to deploy it without landing in the wrong project, and the deploy-hardening files still uncommitted
+description: Where the Google Cloud Vector Search demo runs (Cloud Run vectorsearch-demo in GCP project ericwarriner2, Firestore vector index images4_arcface) as verified 2026-09-26, how to deploy it without landing in the wrong project, and what the build hardening (b8488e1) changed
 metadata:
   type: project
 ---
@@ -13,7 +13,7 @@ metadata:
 
 **Deploying from the Windows PC:** pin `--project ericwarriner2 --account eric.warriner@gmail.com` on every gcloud call. This PC's gcloud default project is `theweekbrewed` (checked 2026-09-26), so an unpinned call lands there. `gcloud run deploy --source .` builds from the `Dockerfile`, not Buildpacks.
 
-**Uncommitted at HEAD 74feabb (2026-09-26), verified by a real Cloud Build, awaiting Eric's decision to commit:**
+**Deploy hardening, committed in b8488e1 (2026-09-26), verified by a real Cloud Build:**
 - `Dockerfile`: base pinned to `denoland/deno:debian-2.9.4`; dependency layer (`deno.json` + `deno.lock` → `deno install`) copied before the source so edits reuse the cache; `CMD` uses `${PORT:-8080}`.
 - New `.dockerignore` and `.gcloudignore`: exclude `service.json`, `.env*`, `node_modules/`, `_fresh/`, `.git/`, `*.pptx`, `scratch/`. Excluding `node_modules` is a correctness fix (a Windows-built 407 MB node_modules was being copied into the Linux image), and the upload fell from ~500 MB to 29 files / 5.7 MiB.
 
