@@ -1,0 +1,3 @@
+- [Deploy state](deploy-state.md) — live on Cloud Run `vectorsearch-demo` (GCP `ericwarriner2`, Firestore index `images4_arcface`, 10,000 docs), verified 2026-09-26; pin --project/--account (this PC defaults to theweekbrewed); Dockerfile + ignore files still uncommitted
+- [Open follow-ups](open-follow-ups.md) — slow search (encodes every result image before slicing), possible NHWC/NCHW ArcFace bug, README + keynote script say WebGL (it's WASM), unpinned 250 MB model + onnxruntime downloads = the conference-wifi risk
+- [Portfolio memory → potomac-hq](../../../potomac-hq/.claude/memory/MEMORY.md) — cross-project facts; everywhere-rules in potomac-hq/claude-global.md via ~/.claude/CLAUDE.md
